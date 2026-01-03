@@ -1,0 +1,12 @@
+[project]
+name = "my_tool"
+version = "0.1.0"
+dependencies = [
+    "pathspec",
+]
+
+[project.scripts]
+my-run = "my_tool.run:start"
+
+[tool.setuptools.packages.find]
+where = ["src"]
