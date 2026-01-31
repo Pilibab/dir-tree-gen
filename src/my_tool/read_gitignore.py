@@ -27,5 +27,7 @@ def get_top_level(project_root: Path):
         except ValueError:
             # Defensive: ignore anything outside the project root
             continue
-
+    
+    # natively ignore .git
+    ignore.add(".git")
     return sorted(ignore)
