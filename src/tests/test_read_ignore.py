@@ -23,17 +23,12 @@ def read_files_in_ignore(file_path : Path, ignore_name: str = ".gitignore"):
     
     # natively ignore .git files 
     patterns.append(".git")
-
     # remove redundancy 
     clean_list = set(patterns)
-
     pattern_list = [*clean_list]
-
     return pattern_list
 
 
-def read_file_outside_ignore(file_path : Path):
-    
 
 def test_read_gitignore_contains_required_folders():
     # 1. Setup
@@ -42,7 +37,7 @@ def test_read_gitignore_contains_required_folders():
     # 2. Action
     ignore_list = get_top_level(to_scan)
 
-    print(ignore_list)
+   
     
     # 3. Assert (Check if individual items exist in the result)
     assert ".git" in ignore_list
@@ -52,3 +47,60 @@ def test_read_gitignore_contains_required_folders():
     
     # check for things that SHOULD NOT be there
     assert "src" not in ignore_list
+
+def test_read_file_outside_ignore():
+    root = Path.cwd()
+    ignore_list = read_files_in_ignore(root)
+    
+    # This now returns a list of strings like ["src/main.py", "README.md"]
+    results = read_file_outside_ignore(root, ignore_list)
+
+    print("\n\nreuslt", results)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+def read_file_outside_ignore(project_root: Path, ignore_patterns: list):
+    # .rglob("*") finds EVERY file and folder recursively
+    all_paths = project_root.rglob("*")
+    
+    valid_paths = []
+    
+    for p in all_paths:
+        # 1. Calculate the path relative to the root (e.g., "src/main.py")
+        # This is vital because gitignore patterns are relative to the root.
+        relative_path = p.relative_to(project_root)
+        
+        # 2. Check this path against every pattern in your ignore list
+        # Using .match() allows us to handle globs like *.py or logs/*.txt
+        is_ignored = any(relative_path.match(pattern) for pattern in ignore_patterns)
+        
+        # 3. Handle Parent Directories!
+        # If 'src' is ignored, then 'src/file.py' must be ignored too.
+        if not is_ignored:
+            # Check if any parent of this file is in the ignore list
+            if not any(parent.match(pattern) for parent in relative_path.parents for pattern in ignore_patterns):
+                valid_paths.append(p)
+
+
+    print(valid_paths)
+
+    return valid_paths

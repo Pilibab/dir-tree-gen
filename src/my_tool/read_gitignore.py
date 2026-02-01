@@ -20,8 +20,10 @@ def get_top_level(project_root: Path):
         print(f"An error occurred while reading the file: {e}")
         return []
     
-    # natively ignore .git files 
+    # natively ignore said files 
     patterns.append(".git")
+    patterns.append("__pycache__")
+    patterns.append(".pytest_cache")
 
     # remove redundancy 
     clean_list = set(patterns)
