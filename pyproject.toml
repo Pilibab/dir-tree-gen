@@ -6,7 +6,7 @@ dependencies = [
 ]
 
 [project.scripts]
-make-tree = "my_tool.run:start"
+make-tree = "my_tool.run:main"
 
 [tool.setuptools.packages.find]
 where = ["src"]
