@@ -1,33 +1,8 @@
-from pathlib import Path
+from pathspec import PathSpec
+from pathspec.patterns.gitwildmatch import GitWildMatchPattern
 
-
-
-def get_top_level(project_root: Path):
-    patterns = []
-    # Use 'with open' to ensure the file is properly closed after reading
-    try:
-        with open(project_root / ".gitignore", 'r') as f:
-            for line in f:
-                # Strip leading/trailing whitespace (including newline characters)
-                line = line.strip()
-                # Ignore blank lines and comments (lines starting with '#')
-                if line and not line.startswith('#'):
-                    patterns.append(line)
-    except FileNotFoundError:
-        print(f"Error: The file '{project_root}' was not found.")
-        return []
-    except Exception as e:
-        print(f"An error occurred while reading the file: {e}")
-        return []
-    
-    # natively ignore said files 
-    patterns.append(".git")
-    patterns.append("__pycache__")
-    patterns.append(".pytest_cache")
-
-    # remove redundancy 
-    clean_list = set(patterns)
-
-    pattern_list = [*clean_list]
-
-    return pattern_list
+def load_gitignore(repo_root):
+    gitignore = repo_root / ".gitignore"
+    if not gitignore.exists():
+        return PathSpec.from_lines(GitWildMatchPattern, [])
+    return PathSpec.from_lines(GitWildMatchPattern, gitignore.read_text().splitlines())

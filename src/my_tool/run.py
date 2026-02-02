@@ -4,7 +4,7 @@ import subprocess
 import tempfile
 
 from .path_reader import generate_tree
-from .read_gitignore import get_top_level
+from .read_gitignore import load_gitignore
 
 
 def start():
@@ -19,10 +19,10 @@ def start():
 
     folder_to_scan = Path.cwd()
 
-    ignore = get_top_level(folder_to_scan)
+    ignore = load_gitignore(folder_to_scan)
 
 
-    dir_tree = generate_tree(folder_to_scan, ignore)
+    dir_tree = generate_tree(folder_to_scan, ignore, folder_to_scan)
 
     temp_path = os.path.join(tempfile.gettempdir(), "tree_output.txt")
     with open(temp_path, "w", encoding='utf-8') as f:
